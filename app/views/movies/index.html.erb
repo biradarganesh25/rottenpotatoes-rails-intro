@@ -2,13 +2,27 @@
 <h2>All Movies</h2>
 
 <%#  Part 1: Start here... %>
+<form id="ratings_form" action=<%= movies_path %>>
+  <% @all_ratings. each do |rating|%>
+  <input type="checkbox" id="<%= "ratings_#{rating}" %>" name="ratings[<%= rating %>]" <%= "checked" if is_checked? rating%>>
+  <label for="<%="ratings[#{rating}]"%>"><%= rating %></label>
+  <% end %>
+  <input id="ratings_submit" type="submit" value="Refresh">
+</form>
+
+<%# = form_tag movies_path, :method => :get do
+  Include:
+  - @all_ratings.each do |rating|
+    = rating
+    = check_box_tag "ratings[#{rating}]"
+  = submit_tag 'Refresh', :class => 'btn btn-primary' %>
 
 <table class="table table-striped col-md-12" id="movies">
   <thead>
     <tr>
-      <th>Movie Title</th>
+      <th class=<%= get_table_header_class 'title'%>><a id="title_header" class="<%= get_sorted_column_header_text 'title' %>" href=<%= movies_path+"?sort=title"%>>Movie Title</a></th>
       <th>Rating</th>
-      <th>Release Date</th>
+      <th class="<%= get_table_header_class 'release_date'%>"><a id="release_date_header" class="<%= get_sorted_column_header_text 'release_date' %>" href=<%= movies_path+"?sort=release_date"%>>Release Date</a></th>
       <th>More Info</th>
     </tr>
   </thead>

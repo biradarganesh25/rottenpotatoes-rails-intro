@@ -7,7 +7,41 @@ class MoviesController < ApplicationController
   end
 
   def index
+    @all_ratings = Movie.get_ratings
+
     @movies = Movie.all
+
+    sortable_columns = ['title','release_date']
+    if params.key?('sort') && (sortable_columns.include?(params['sort']))
+        session['sort']=params['sort']
+    end
+
+    if session['sort'] != nil && params['sort']==nil
+      flash.keep
+      redirect_to movies_path(request.parameters.merge(sort:session['sort'])) and return
+    end
+
+    if params.key? 'ratings' 
+      session['ratings']=params['ratings']
+    elsif session['ratings']==nil
+      session['ratings']={}
+      @all_ratings.each do |rating|
+        session['ratings'][rating]=1
+      end
+    end
+
+    if session['ratings'] != nil && (params['ratings'] == nil)
+      flash.keep
+      redirect_to movies_path(request.parameters.merge(ratings:session['ratings']))
+    end
+    
+    if session['sort'] != nil
+      @movies = @movies.all.order(session['sort'])
+    end
+    if session['ratings'] != nil
+      @movies = @movies.filter_movies_by_ratings(session['ratings'])
+    end
+
   end
 
   def new
